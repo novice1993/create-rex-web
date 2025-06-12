@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running lint checks..."
+npx lint-staged || {
+  echo "❌ Linting failed! Please fix the errors before committing."
+  exit 1
+}
+
+echo "✅ All checks passed. Proceeding with commit."

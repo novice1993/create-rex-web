@@ -1,0 +1,5 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "prettier",
+  "eslint.autoFixOnSave": true
+}

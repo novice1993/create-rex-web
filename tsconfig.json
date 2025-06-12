@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2020",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+    "baseUrl": "./templates",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["bin/**/*.cjs", "templates/src/**/*"],
+  "exclude": ["node_modules"]
+}

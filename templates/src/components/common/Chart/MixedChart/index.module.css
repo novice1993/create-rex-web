@@ -1,0 +1,31 @@
+.paper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  border-radius: 12px;
+}
+.button {
+  position: absolute;
+  width: 69px;
+  height: 24px;
+  padding: 2px 12px;
+  top: 17px;
+  right: 20px;
+  /* transform: translate(-16px, -20px); */
+  font-size: 13px;
+}
+.leftPagination {
+  position: absolute;
+  left: 5px;
+}
+.rightPagination {
+  position: absolute;
+  right: 5px;
+}
+.disabledIcon {
+  opacity: 0.3;
+}

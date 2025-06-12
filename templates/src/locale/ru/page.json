@@ -1,0 +1,10 @@
+{
+  "english": "English",
+  "korean": "한국어",
+  "russian": "Русский",
+  "language": "Язык",
+  "logout": "Выйти",
+  "Login": {
+    "login": "Войти"
+  }
+}

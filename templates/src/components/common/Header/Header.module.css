@@ -1,0 +1,71 @@
+.container {
+  width: 100%;
+  height: 64px;
+  display: flex;
+  align-items: center;
+
+  flex: 1 0 0;
+}
+
+.logo {
+  position: relative;
+  height: 100%;
+
+  padding-left: 20px;
+  display: flex;
+  gap: 80px;
+  flex: 1 0 0;
+
+  font-size: 1.8rem;
+  font-weight: bolder;
+  color: #ffff;
+}
+
+.rexgen {
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.contents {
+  position: absolute;
+
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  transition: opacity ease-in-out 0.5s;
+}
+
+.iconsList {
+  gap: 12px;
+  padding-right: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1 0 0;
+}
+
+.iconsList button,
+.iconsList [role="button"] {
+  outline: none;
+  border: none;
+  background: transparent;
+}
+
+.iconsList button:focus,
+.iconsList [role="button"]:focus,
+.iconsList button:focus-visible,
+.iconsList [role="button"]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.logout-button {
+  color: "white";
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #225cd0;
+  }
+}

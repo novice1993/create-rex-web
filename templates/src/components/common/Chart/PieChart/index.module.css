@@ -1,0 +1,34 @@
+.paper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px 16px;
+  border-radius: 12px;
+}
+.button {
+  position: absolute;
+  width: 69px;
+  height: 24px;
+  padding: 2px 12px;
+  top: 20px;
+  right: 20px;
+  /* transform: translate(-16px, -20px); */
+  font-size: 13px;
+}
+.leftLabel {
+  position: absolute;
+  margin: 0;
+  top: 50%;
+  left: 26.5%;
+  transform: translate(-50%, 26.5%);
+}
+.rightLabel {
+  position: absolute;
+  margin: 0;
+  top: 54%;
+  right: 21%;
+  transform: translate(-54%, -21%);
+}
