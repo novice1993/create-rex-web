@@ -9,6 +9,7 @@
   "files": [
     "bin",
     "templates",
+    "templates/.gitignore",
     "README.md",
     "LICENSE"
   ],

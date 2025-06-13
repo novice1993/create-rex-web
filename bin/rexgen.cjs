@@ -2,13 +2,12 @@
 
 const fs = require("fs");
 const path = require("path");
-
 const args = process.argv.slice(2);
 const projectName = args[0];
 
 function showHelp() {
   console.log(`
-⚡ Create Rex-Web 프로젝트 생성 도구
+⚡ Create Rex-Web 프론트엔드 개발환경 셋팅 도구
 
 사용법:
   npx create-rex-web <project-name>
@@ -30,7 +29,9 @@ function copyDirRecursive(src, dest) {
       if (entry.isDirectory()) {
         copyDirRecursive(srcPath, destPath);
       } else {
-        fs.copyFileSync(srcPath, destPath);
+        // .gitignore 파일로 이름 바꿔서 복사
+        const finalDestPath = entry.name === "gitignore" ? path.join(dest, ".gitignore") : destPath;
+        fs.copyFileSync(srcPath, finalDestPath);
       }
     }
   } catch (error) {
@@ -60,7 +61,6 @@ function createProject(projectName) {
     process.chdir(projectPath);
     console.log(`📁 프로젝트 디렉토리 생성 완료: ${projectPath}`);
 
-    // 1. package.json
     console.log("📦 package.json 생성 중...");
     const packageJson = {
       name: projectName,
@@ -103,7 +103,7 @@ function createProject(projectName) {
         zod: "^3.23.8"
       },
       devDependencies: {
-        "@types/node": "^20.12.12", // path 타입 오류 해결
+        "@types/node": "^20.11.30",
         "@types/react": "^18.3.3",
         "@types/react-csv": "^1.1.10",
         "@types/react-dom": "^18.3.0",
@@ -122,26 +122,14 @@ function createProject(projectName) {
         vite: "^5.4.1",
         "vite-plugin-dts": "^4.0.0",
         "vite-plugin-svgr": "^4.3.0"
-      },
-      msw: {
-        workerDirectory: ["public"]
-      },
-      "lint-staged": {
-        "**/*.{js,jsx,ts,tsx}": ["prettier --write", "eslint --format stylish --max-warnings=0"]
       }
     };
     fs.writeFileSync("package.json", JSON.stringify(packageJson, null, 2));
 
-    // 2. 템플릿 복사
     console.log("📋 템플릿 파일 복사 중...");
-    const cliEntryFile = require.main?.filename;
-    if (!cliEntryFile) {
-      console.error("❌ CLI 실행 경로를 찾을 수 없습니다.");
-      process.exit(1);
-    }
+    const cliEntryFile = require.main?.filename || "";
     const cliPath = path.dirname(cliEntryFile);
     const templatesPath = path.join(cliPath, "..", "templates");
-
     if (fs.existsSync(templatesPath)) {
       copyDirRecursive(templatesPath, projectPath);
       console.log("  ✅ 템플릿 파일 복사 완료");
@@ -150,35 +138,16 @@ function createProject(projectName) {
       process.exit(1);
     }
 
-    // 3. .env 파일
-    console.log("🔧 .env 파일 생성 중...");
     fs.writeFileSync(".env.development", `VITE_ENABLE_MSW=true\nNODE_ENV=development`);
     fs.writeFileSync(".env.production", `VITE_ENABLE_MSW=false\nNODE_ENV=production`);
-    console.log("  ✅ .env.development, .env.production 생성 완료");
-
-    // 4. README
     fs.writeFileSync("README.md", `# ${projectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
 
     console.log("\n\n✅ 프로젝트 생성 완료!");
-    console.log("----------------------------------------");
-    console.log(`
-다음 단계를 진행해주세요:
-
-  1. 프로젝트 디렉토리로 이동:
-     cd ${projectName}
-
-  2. 의존성 설치:
-     npm install
-
-  3. 개발 서버 시작:
-     npm run dev
-`);
-    console.log("----------------------------------------\n");
+    console.log(`다음 단계:\ncd ${projectName}\nnpm install\nnpm run dev`);
   } catch (error) {
-    console.error("\n❌ 프로젝트 생성 중 오류:", error.message);
+    console.error("❌ 프로젝트 생성 중 오류:", error.message);
     process.chdir("..");
     fs.rmSync(projectPath, { recursive: true, force: true });
-    console.error("🧹 생성된 파일을 정리했습니다.");
     process.exit(1);
   }
 }
