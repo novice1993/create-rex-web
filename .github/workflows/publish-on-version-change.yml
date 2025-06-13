@@ -1,4 +1,4 @@
-name: Publish npm package
+name: Publish if version changed
 
 on:
   push:
@@ -6,14 +6,15 @@ on:
       - main
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
@@ -21,21 +22,25 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Check version change
-        id: check_version
+      - name: Check if version changed
+        id: version_check
         run: |
-          PREV_VERSION=$(git show HEAD^:package.json | jq -r '.version')
+          PUBLISHED_VERSION=$(npm view create-rex-web version || echo "none")
           CURR_VERSION=$(jq -r '.version' package.json)
-          echo "Previous version: $PREV_VERSION"
-          echo "Current version: $CURR_VERSION"
-          if [ "$PREV_VERSION" != "$CURR_VERSION" ]; then
+
+          echo "📝 Current version: $CURR_VERSION"
+          echo "📦 Published version: $PUBLISHED_VERSION"
+
+          if [ "$CURR_VERSION" != "$PUBLISHED_VERSION" ]; then
             echo "VERSION_CHANGED=true" >> $GITHUB_OUTPUT
           else
             echo "VERSION_CHANGED=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Publish to npm
-        if: steps.check_version.outputs.VERSION_CHANGED == 'true'
-        run: npm publish
+        if: steps.version_check.outputs.VERSION_CHANGED == 'true'
+        run: |
+          echo "🚀 Publishing to npm..."
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
