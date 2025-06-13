@@ -26,11 +26,11 @@ function copyDirRecursive(src, dest) {
       const srcPath = path.join(src, entry.name);
       const destPath = path.join(dest, entry.name);
 
+      const finalDestPath = entry.name === "gitignore" ? path.join(dest, ".gitignore") : destPath;
+
       if (entry.isDirectory()) {
-        copyDirRecursive(srcPath, destPath);
+        copyDirRecursive(srcPath, finalDestPath);
       } else {
-        // .gitignore 파일로 이름 바꿔서 복사
-        const finalDestPath = entry.name === "gitignore" ? path.join(dest, ".gitignore") : destPath;
         fs.copyFileSync(srcPath, finalDestPath);
       }
     }
@@ -42,7 +42,7 @@ function copyDirRecursive(src, dest) {
 
 function createProject(projectName) {
   if (!projectName || !/^[a-zA-Z0-9-_]+$/.test(projectName)) {
-    console.error("❌ 유효한 프로젝트 이름을 입력해주세요. (영문, 숫자, -, _ 만 사용 가능)");
+    console.error("❌ 유효한 프로젝트 이름을 입력해주세요.");
     showHelp();
     process.exit(1);
   }
@@ -54,13 +54,14 @@ function createProject(projectName) {
     process.exit(1);
   }
 
-  console.log(`\n⚡ Create Rex-Web 프로젝트 생성 시작: ${projectName}\n`);
+  console.log(`\n⚡ 프로젝트 생성 시작: ${projectName}\n`);
 
   try {
     fs.mkdirSync(projectPath);
     process.chdir(projectPath);
-    console.log(`📁 프로젝트 디렉토리 생성 완료: ${projectPath}`);
+    console.log(`📁 디렉토리 생성 완료: ${projectPath}`);
 
+    // package.json 생성
     console.log("📦 package.json 생성 중...");
     const packageJson = {
       name: projectName,
@@ -126,15 +127,15 @@ function createProject(projectName) {
     };
     fs.writeFileSync("package.json", JSON.stringify(packageJson, null, 2));
 
-    console.log("📋 템플릿 파일 복사 중...");
+    // 템플릿 복사
     const cliEntryFile = require.main?.filename || "";
     const cliPath = path.dirname(cliEntryFile);
     const templatesPath = path.join(cliPath, "..", "templates");
     if (fs.existsSync(templatesPath)) {
       copyDirRecursive(templatesPath, projectPath);
-      console.log("  ✅ 템플릿 파일 복사 완료");
+      console.log("✅ 템플릿 복사 완료");
     } else {
-      console.error("❌ 'templates' 디렉토리를 찾을 수 없습니다.");
+      console.error("❌ 템플릿 경로를 찾을 수 없습니다.");
       process.exit(1);
     }
 
@@ -142,10 +143,9 @@ function createProject(projectName) {
     fs.writeFileSync(".env.production", `VITE_ENABLE_MSW=false\nNODE_ENV=production`);
     fs.writeFileSync("README.md", `# ${projectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
 
-    console.log("\n\n✅ 프로젝트 생성 완료!");
-    console.log(`다음 단계:\ncd ${projectName}\nnpm install\nnpm run dev`);
-  } catch (error) {
-    console.error("❌ 프로젝트 생성 중 오류:", error.message);
+    console.log(`\n✅ 생성 완료! 다음 명령어 실행:\ncd ${projectName}\nnpm install\nnpm run dev`);
+  } catch (err) {
+    console.error("❌ 오류 발생:", err.message);
     process.chdir("..");
     fs.rmSync(projectPath, { recursive: true, force: true });
     process.exit(1);
