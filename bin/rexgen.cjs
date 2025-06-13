@@ -2,39 +2,22 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
 
 const args = process.argv.slice(2);
 const projectName = args[0];
 
 function showHelp() {
   console.log(`
-⚡ Create Rex-Web 프론트엔드 개발환경 셋팅 도구
+⚡ Create Rex-Web 프로젝트 생성 도구
 
 사용법:
   npx create-rex-web <project-name>
 
 예시:
   npx create-rex-web my-dashboard
-
-Mantine UI에서 MUI로 마이그레이션된 최신 개발 환경을 제공합니다.
-포함된 기술 스택:
-  ⚛️ React 18 + TypeScript
-  🎨 Material-UI (MUI) v7
-  🎭 MSW (Mock Service Worker)
-  🌍 React i18next (다국어)
-  📊 ECharts (차트)
-  🔄 TanStack Query (상태 관리)
-  📝 React Hook Form (폼 관리)
-  🐶 Husky (Git Hooks)
-  `);
+`);
 }
 
-/**
- * 디렉터리를 재귀적으로 복사하는 함수
- * @param {string} src - 원본 경로
- * @param {string} dest - 대상 경로
- */
 function copyDirRecursive(src, dest) {
   try {
     fs.mkdirSync(dest, { recursive: true });
@@ -56,10 +39,6 @@ function copyDirRecursive(src, dest) {
   }
 }
 
-/**
- * Creates a new project directory and populates it with the template files.
- * @param {string} projectName - The name of the project to create.
- */
 function createProject(projectName) {
   if (!projectName || !/^[a-zA-Z0-9-_]+$/.test(projectName)) {
     console.error("❌ 유효한 프로젝트 이름을 입력해주세요. (영문, 숫자, -, _ 만 사용 가능)");
@@ -77,12 +56,11 @@ function createProject(projectName) {
   console.log(`\n⚡ Create Rex-Web 프로젝트 생성 시작: ${projectName}\n`);
 
   try {
-    // 1. 프로젝트 디렉토리 생성
     fs.mkdirSync(projectPath);
     process.chdir(projectPath);
     console.log(`📁 프로젝트 디렉토리 생성 완료: ${projectPath}`);
 
-    // 2. package.json 생성
+    // 1. package.json
     console.log("📦 package.json 생성 중...");
     const packageJson = {
       name: projectName,
@@ -125,6 +103,7 @@ function createProject(projectName) {
         zod: "^3.23.8"
       },
       devDependencies: {
+        "@types/node": "^20.12.12", // path 타입 오류 해결
         "@types/react": "^18.3.3",
         "@types/react-csv": "^1.1.10",
         "@types/react-dom": "^18.3.0",
@@ -153,73 +132,33 @@ function createProject(projectName) {
     };
     fs.writeFileSync("package.json", JSON.stringify(packageJson, null, 2));
 
-    // 3. 템플릿 파일 복사
+    // 2. 템플릿 복사
     console.log("📋 템플릿 파일 복사 중...");
     const cliEntryFile = require.main?.filename;
     if (!cliEntryFile) {
-      console.error("❌ CLI 실행 경로를 찾을 수 없습니다. CLI 도구 설치에 문제가 있을 수 있습니다.");
+      console.error("❌ CLI 실행 경로를 찾을 수 없습니다.");
       process.exit(1);
     }
     const cliPath = path.dirname(cliEntryFile);
     const templatesPath = path.join(cliPath, "..", "templates");
+
     if (fs.existsSync(templatesPath)) {
       copyDirRecursive(templatesPath, projectPath);
       console.log("  ✅ 템플릿 파일 복사 완료");
     } else {
-      console.error("❌ 'templates' 디렉토리를 찾을 수 없습니다. CLI 도구 설치에 문제가 있을 수 있습니다.");
+      console.error("❌ 'templates' 디렉토리를 찾을 수 없습니다.");
       process.exit(1);
     }
 
-    // 4. 환경 변수 파일(.env) 생성
+    // 3. .env 파일
     console.log("🔧 .env 파일 생성 중...");
-    const envDevelopment = `# Development Environment Variables
-VITE_ENABLE_MSW=true
-NODE_ENV=development`;
-    fs.writeFileSync(".env.development", envDevelopment);
-
-    const envProduction = `# Production Environment Variables
-VITE_ENABLE_MSW=false
-NODE_ENV=production`;
-    fs.writeFileSync(".env.production", envProduction);
+    fs.writeFileSync(".env.development", `VITE_ENABLE_MSW=true\nNODE_ENV=development`);
+    fs.writeFileSync(".env.production", `VITE_ENABLE_MSW=false\nNODE_ENV=production`);
     console.log("  ✅ .env.development, .env.production 생성 완료");
 
-    // 5. README.md 파일 생성
-    console.log("📝 README.md 생성 중...");
-    const readme = `# ${projectName}
+    // 4. README
+    fs.writeFileSync("README.md", `# ${projectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
 
-Create Rex-Web으로 생성된 React + MUI 프로젝트입니다.
-
-## 🚀 시작하기
-
-1. **의존성 설치**
-   \`\`\`bash
-   npm install
-   \`\`\`
-   *이 과정에서 Husky가 자동으로 Git hooks를 설정합니다.*
-
-2. **개발 서버 실행**
-   \`\`\`bash
-   npm run dev
-   \`\`\`
-
-## 📖 주요 스크립트
-
-- \`npm run dev\`: 개발 서버를 시작합니다. (MSW 활성화)
-- \`npm run build\`: 프로덕션용으로 앱을 빌드합니다.
-- \`npm run lint\`: ESLint로 코드 품질을 검사합니다.
-- \`npm run format\`: Prettier로 코드를 포맷팅합니다.
-
-## 📁 디렉토리 구조
-
-- \`src/components/common\`: 공통 재사용 컴포넌트
-- \`src/hooks\`: 커스텀 훅
-- \`src/mocks\`: MSW Mock Server 관련 파일 (handlers, setup)
-- \`src/providers\`: 전역 Context Provider
-- \`.husky\`: Git hooks 설정 (pre-commit)
-`;
-    fs.writeFileSync("README.md", readme);
-
-    // --- 최종 안내 ---
     console.log("\n\n✅ 프로젝트 생성 완료!");
     console.log("----------------------------------------");
     console.log(`
@@ -236,8 +175,7 @@ Create Rex-Web으로 생성된 React + MUI 프로젝트입니다.
 `);
     console.log("----------------------------------------\n");
   } catch (error) {
-    console.error("\n❌ 프로젝트 생성 중 오류가 발생했습니다:", /** @type {Error} */ (error).message);
-    // 생성 실패 시 생성된 디렉토리 정리
+    console.error("\n❌ 프로젝트 생성 중 오류:", error.message);
     process.chdir("..");
     fs.rmSync(projectPath, { recursive: true, force: true });
     console.error("🧹 생성된 파일을 정리했습니다.");
@@ -245,7 +183,6 @@ Create Rex-Web으로 생성된 React + MUI 프로젝트입니다.
   }
 }
 
-// 메인 실행
 if (args.length === 0 || args.includes("help") || args.includes("--help") || args.includes("-h")) {
   showHelp();
 } else {
