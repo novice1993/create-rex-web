@@ -15,6 +15,8 @@ tsconfig.tsbuildinfo
 
 # Editor directories and files
 !.vscode/extensions.json
+.cursorrules
+.cursor/rules
 .idea
 .DS_Store
 *.suo
@@ -23,6 +25,3 @@ tsconfig.tsbuildinfo
 *.sln
 *.sw?
 
-# cursor
-.cursorrules
-.cursor/rules
