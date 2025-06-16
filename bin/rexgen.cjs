@@ -47,30 +47,43 @@ function createProject(projectName) {
     process.exit(1);
   }
 
-  // 경로인지 확인 (., /, \ 포함)
-  const isPath = projectName.includes("/") || projectName.includes("\\") || projectName.startsWith(".");
+  // 현재 디렉토리 설치인지 확인
+  const isCurrentDir = projectName === "." || projectName === "./";
 
   let finalProjectName;
   let projectPath;
+  let shouldCreateDir = true;
 
-  if (isPath) {
-    // 경로인 경우
-    projectPath = path.resolve(process.cwd(), projectName);
+  if (isCurrentDir) {
+    // 현재 디렉토리에 직접 설치
+    projectPath = process.cwd();
     finalProjectName = path.basename(projectPath);
+    shouldCreateDir = false;
 
-    // 현재 디렉토리를 가리키는 경우 (., ./)
-    if (finalProjectName === "." || finalProjectName === "") {
-      finalProjectName = path.basename(process.cwd());
-    }
-  } else {
-    // 일반 프로젝트 이름인 경우
-    if (!/^[a-zA-Z0-9-_]+$/.test(projectName)) {
-      console.error("❌ 유효한 프로젝트 이름을 입력해주세요.");
-      showHelp();
+    // 현재 디렉토리가 비어있는지 확인
+    const entries = fs.readdirSync(projectPath);
+    if (entries.length > 0) {
+      console.error("❌ 현재 디렉토리가 비어있지 않습니다. 빈 디렉토리에서 실행해주세요.");
       process.exit(1);
     }
-    finalProjectName = projectName;
-    projectPath = path.resolve(process.cwd(), projectName);
+  } else {
+    // 경로인지 확인 (/, \ 포함)
+    const isPath = projectName.includes("/") || projectName.includes("\\");
+
+    if (isPath) {
+      // 경로인 경우
+      projectPath = path.resolve(process.cwd(), projectName);
+      finalProjectName = path.basename(projectPath);
+    } else {
+      // 일반 프로젝트 이름인 경우
+      if (!/^[a-zA-Z0-9-_]+$/.test(projectName)) {
+        console.error("❌ 유효한 프로젝트 이름을 입력해주세요.");
+        showHelp();
+        process.exit(1);
+      }
+      finalProjectName = projectName;
+      projectPath = path.resolve(process.cwd(), projectName);
+    }
   }
 
   // 최종 프로젝트 이름 유효성 검사
@@ -80,7 +93,7 @@ function createProject(projectName) {
     process.exit(1);
   }
 
-  if (fs.existsSync(projectPath)) {
+  if (shouldCreateDir && fs.existsSync(projectPath)) {
     console.error(`❌ '${finalProjectName}' 디렉토리가 이미 존재합니다.`);
     process.exit(1);
   }
@@ -88,9 +101,11 @@ function createProject(projectName) {
   console.log(`\n⚡ 프로젝트 생성 시작: ${finalProjectName}\n`);
 
   try {
-    fs.mkdirSync(projectPath);
+    if (shouldCreateDir) {
+      fs.mkdirSync(projectPath);
+    }
     process.chdir(projectPath);
-    console.log(`📁 디렉토리 생성 완료: ${projectPath}`);
+    console.log(`📁 ${shouldCreateDir ? "디렉토리 생성 완료" : "현재 디렉토리 사용"}: ${projectPath}`);
 
     // package.json 생성
     console.log("📦 package.json 생성 중...");
@@ -174,7 +189,11 @@ function createProject(projectName) {
     fs.writeFileSync(".env.production", `VITE_ENABLE_MSW=false\nNODE_ENV=production`);
     fs.writeFileSync("README.md", `# ${finalProjectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
 
-    console.log(`\n✅ 생성 완료! 다음 명령어 실행:\ncd ${finalProjectName}\nnpm install\nnpm run dev`);
+    if (shouldCreateDir) {
+      console.log(`\n✅ 생성 완료! 다음 명령어 실행:\ncd ${finalProjectName}\nnpm install\nnpm run dev`);
+    } else {
+      console.log(`\n✅ 생성 완료! 다음 명령어 실행:\nnpm install\nnpm run dev`);
+    }
   } catch (err) {
     console.error("❌ 오류 발생:", err.message);
     process.chdir("..");
