@@ -41,20 +41,51 @@ function copyDirRecursive(src, dest) {
 }
 
 function createProject(projectName) {
-  if (!projectName || !/^[a-zA-Z0-9-_]+$/.test(projectName)) {
+  if (!projectName) {
+    console.error("❌ 프로젝트 이름 또는 경로를 입력해주세요.");
+    showHelp();
+    process.exit(1);
+  }
+
+  // 경로인지 확인 (., /, \ 포함)
+  const isPath = projectName.includes("/") || projectName.includes("\\") || projectName.startsWith(".");
+
+  let finalProjectName;
+  let projectPath;
+
+  if (isPath) {
+    // 경로인 경우
+    projectPath = path.resolve(process.cwd(), projectName);
+    finalProjectName = path.basename(projectPath);
+
+    // 현재 디렉토리를 가리키는 경우 (., ./)
+    if (finalProjectName === "." || finalProjectName === "") {
+      finalProjectName = path.basename(process.cwd());
+    }
+  } else {
+    // 일반 프로젝트 이름인 경우
+    if (!/^[a-zA-Z0-9-_]+$/.test(projectName)) {
+      console.error("❌ 유효한 프로젝트 이름을 입력해주세요.");
+      showHelp();
+      process.exit(1);
+    }
+    finalProjectName = projectName;
+    projectPath = path.resolve(process.cwd(), projectName);
+  }
+
+  // 최종 프로젝트 이름 유효성 검사
+  if (!finalProjectName || !/^[a-zA-Z0-9-_]+$/.test(finalProjectName)) {
     console.error("❌ 유효한 프로젝트 이름을 입력해주세요.");
     showHelp();
     process.exit(1);
   }
 
-  const projectPath = path.resolve(process.cwd(), projectName);
-
   if (fs.existsSync(projectPath)) {
-    console.error(`❌ '${projectName}' 디렉토리가 이미 존재합니다.`);
+    console.error(`❌ '${finalProjectName}' 디렉토리가 이미 존재합니다.`);
     process.exit(1);
   }
 
-  console.log(`\n⚡ 프로젝트 생성 시작: ${projectName}\n`);
+  console.log(`\n⚡ 프로젝트 생성 시작: ${finalProjectName}\n`);
 
   try {
     fs.mkdirSync(projectPath);
@@ -64,7 +95,7 @@ function createProject(projectName) {
     // package.json 생성
     console.log("📦 package.json 생성 중...");
     const packageJson = {
-      name: projectName,
+      name: finalProjectName,
       version: "0.1.0",
       private: true,
       type: "module",
@@ -141,9 +172,9 @@ function createProject(projectName) {
 
     fs.writeFileSync(".env.development", `VITE_ENABLE_MSW=true\nNODE_ENV=development`);
     fs.writeFileSync(".env.production", `VITE_ENABLE_MSW=false\nNODE_ENV=production`);
-    fs.writeFileSync("README.md", `# ${projectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
+    fs.writeFileSync("README.md", `# ${finalProjectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
 
-    console.log(`\n✅ 생성 완료! 다음 명령어 실행:\ncd ${projectName}\nnpm install\nnpm run dev`);
+    console.log(`\n✅ 생성 완료! 다음 명령어 실행:\ncd ${finalProjectName}\nnpm install\nnpm run dev`);
   } catch (err) {
     console.error("❌ 오류 발생:", err.message);
     process.chdir("..");
