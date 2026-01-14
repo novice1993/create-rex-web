@@ -14,7 +14,18 @@ function showHelp() {
 
 예시:
   npx create-rex-web my-dashboard
-`);
+
+MUI에서 Mantine으로 마이그레이션된 최신 개발 환경을 제공합니다.
+포함된 기술 스택:
+  ⚛️ React 18 + TypeScript
+  🎨 Mantine v7
+  🎭 MSW (Mock Service Worker)
+  🌍 React i18next (다국어)
+  📊 ECharts (차트)
+  🔄 TanStack Query (상태 관리)
+  📝 React Hook Form (폼 관리)
+  🐶 Husky (Git Hooks)
+  `);
 }
 
 function copyDirRecursive(src, dest) {
@@ -126,14 +137,15 @@ function createProject(projectName) {
       },
       dependencies: {
         "@emotion/react": "^11.14.0",
-        "@emotion/styled": "^11.14.0",
         "@hookform/resolvers": "^3.9.0",
-        "@mui/material": "^7.1.1",
-        "@mui/x-date-pickers": "^8.5.1",
+        "@mantine/core": "^7.15.2",
+        "@mantine/dates": "^7.15.2",
+        "@mantine/hooks": "^7.15.2",
         "@react-google-maps/api": "^2.20.6",
         "@tanstack/react-query": "^5.59.15",
         "@tanstack/react-table": "^8.20.5",
         axios: "^1.7.7",
+        dayjs: "^1.11.13",
         echarts: "^5.5.1",
         "echarts-for-react": "3.0.2",
         jotai: "^2.9.3",
@@ -189,6 +201,69 @@ function createProject(projectName) {
     fs.writeFileSync(".env.production", `VITE_ENABLE_MSW=false\nNODE_ENV=production`);
     fs.writeFileSync("README.md", `# ${finalProjectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
 
+<<<<<<< HEAD
+    const envProduction = `# Production Environment Variables
+VITE_ENABLE_MSW=false
+NODE_ENV=production`;
+    fs.writeFileSync(".env.production", envProduction);
+    console.log("  ✅ .env.development, .env.production 생성 완료");
+
+    // 5. README.md 파일 생성
+    console.log("📝 README.md 생성 중...");
+    const readme = `# ${projectName}
+
+Create Rex-Web으로 생성된 React + Mantine 프로젝트입니다.
+
+## 🚀 시작하기
+
+1. **의존성 설치**
+   \`\`\`bash
+   npm install
+   \`\`\`
+   *이 과정에서 Husky가 자동으로 Git hooks를 설정합니다.*
+
+2. **개발 서버 실행**
+   \`\`\`bash
+   npm run dev
+   \`\`\`
+
+## 📖 주요 스크립트
+
+- \`npm run dev\`: 개발 서버를 시작합니다. (MSW 활성화)
+- \`npm run build\`: 프로덕션용으로 앱을 빌드합니다.
+- \`npm run lint\`: ESLint로 코드 품질을 검사합니다.
+- \`npm run format\`: Prettier로 코드를 포맷팅합니다.
+
+## 📁 디렉토리 구조
+
+- \`src/components/common\`: 공통 재사용 컴포넌트
+- \`src/hooks\`: 커스텀 훅
+- \`src/mocks\`: MSW Mock Server 관련 파일 (handlers, setup)
+- \`src/providers\`: 전역 Context Provider
+- \`.husky\`: Git hooks 설정 (pre-commit)
+`;
+    fs.writeFileSync("README.md", readme);
+
+    // --- 최종 안내 ---
+    console.log("\n\n✅ 프로젝트 생성 완료!");
+    console.log("----------------------------------------");
+    console.log(`
+다음 단계를 진행해주세요:
+
+  1. 프로젝트 디렉토리로 이동:
+     cd ${projectName}
+
+  2. 의존성 설치:
+     npm install
+
+  3. 개발 서버 시작:
+     npm run dev
+`);
+    console.log("----------------------------------------\n");
+  } catch (error) {
+    console.error("\n❌ 프로젝트 생성 중 오류가 발생했습니다:", /** @type {Error} */ (error).message);
+    // 생성 실패 시 생성된 디렉토리 정리
+=======
     if (shouldCreateDir) {
       console.log(`\n✅ 생성 완료! 다음 명령어 실행:\ncd ${finalProjectName}\nnpm install\nnpm run dev`);
     } else {
@@ -196,6 +271,7 @@ function createProject(projectName) {
     }
   } catch (err) {
     console.error("❌ 오류 발생:", err.message);
+>>>>>>> origin/main
     process.chdir("..");
     fs.rmSync(projectPath, { recursive: true, force: true });
     process.exit(1);

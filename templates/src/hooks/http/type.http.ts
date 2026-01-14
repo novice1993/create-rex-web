@@ -5,6 +5,7 @@ export interface HttpApiType<T> {
   GET: (url: string, data?: object, signal?: AbortSignal, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>;
   POST: (url: string, data?: object, signal?: AbortSignal, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>;
   PUT: (url: string, data?: object, signal?: AbortSignal, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>;
+  PATCH: (url: string, data?: object, signal?: AbortSignal, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>;
   DELETE: (url: string, signal?: AbortSignal, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>;
 }
 
@@ -13,13 +14,17 @@ export interface DefaultResponse<T> {
   statusCode: number;
   message: string;
   data: T;
+  timestamp: string;
 }
 
 export interface DefaultErrorResponse {
   code?: string;
   statusCode: number;
   message: string;
-  error: string;
+  error: {
+    code: string;
+    message: string;
+  };
 }
 
 export type ErrorResponseType = AxiosError<DefaultErrorResponse>;

@@ -1,26 +1,15 @@
-import { useState, MouseEvent } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Menu, MenuItem, Tooltip, Typography } from "@mui/material";
+import { Button, Menu, Text, Tooltip } from "@mantine/core";
 import { useSharedSchemeColor } from "@/providers/SchemeColorProvider";
 import { IoLanguage } from "react-icons/io5";
 
 const LanguageToggleButton = () => {
   const { i18n, t } = useTranslation();
   const { textHighContrast } = useSharedSchemeColor();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
-    handleClose();
   };
 
   const getDisplayLanguage = () => {
@@ -38,43 +27,29 @@ const LanguageToggleButton = () => {
 
   return (
     <>
-      <Typography color="white">|</Typography>
-      <Tooltip title={t("language")}>
-        <Button
-          variant="outlined"
-          color="inherit"
-          size="small"
-          startIcon={<IoLanguage size={18} />}
-          onClick={handleClick}
-          sx={{
-            color: textHighContrast,
-            minWidth: "80px",
-            justifyContent: "flex-start",
-            "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.1)"
-            }
-          }}
-        >
-          {getDisplayLanguage()}
-        </Button>
-      </Tooltip>
+      <Text c="white">|</Text>
+      <Menu position="bottom-end">
+        <Tooltip label={t("language")}>
+          <Menu.Target>
+            <Button
+              variant="outline"
+              size="sm"
+              leftSection={<IoLanguage size={18} />}
+              style={{
+                color: textHighContrast,
+                minWidth: "80px"
+              }}
+            >
+              {getDisplayLanguage()}
+            </Button>
+          </Menu.Target>
+        </Tooltip>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right"
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right"
-        }}
-      >
-        <MenuItem onClick={() => changeLanguage("ko")}>{t("korean")}</MenuItem>
-        <MenuItem onClick={() => changeLanguage("en")}>{t("english")}</MenuItem>
-        <MenuItem onClick={() => changeLanguage("ru")}>{t("russian")}</MenuItem>
+        <Menu.Dropdown>
+          <Menu.Item onClick={() => changeLanguage("ko")}>{t("korean")}</Menu.Item>
+          <Menu.Item onClick={() => changeLanguage("en")}>{t("english")}</Menu.Item>
+          <Menu.Item onClick={() => changeLanguage("ru")}>{t("russian")}</Menu.Item>
+        </Menu.Dropdown>
       </Menu>
     </>
   );

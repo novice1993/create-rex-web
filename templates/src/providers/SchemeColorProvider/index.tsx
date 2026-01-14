@@ -1,46 +1,19 @@
 import { createContext, useContext, ReactNode, useMemo } from "react";
-import { useTheme } from "@mui/material/styles";
+import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
+import { Global } from "@emotion/react";
 
 const SchemeColorContext = createContext<Record<string, string> | null>(null);
 
-// Rex 색상 팔레트 정의 (기존 Mantine 색상들을 그대로 유지)
-const rexColors = {
-  rex_main: ["rgba(34,92,208,0.1)", "rgba(34,92,208,0.24)", "#90ade7", "rgba(34,92,208,0.5)", "#386cd4", "#225cd0", "#1b49a6", "#14377c", "#0d2453", "#061229"],
-  rex_black: ["#dde1e5", "#b4c0d3", "#a4a7b2", "#9598a5", "#8491a7", "#777b8b", "#6b6d7f", "#323442", "#21232e", "#11121b"],
-  rex_gray: ["#ffffff", "#f4f6fa", "#e9e9e9", "#d1d1d1", "#bababa", "#a3a3a3", "#8b8b8b", "#747474", "#5d5d5d", "#393939"],
-  rex_opacity: [
-    "rgba(255,255,255,0.86)",
-    "#ffffff",
-    "rgba(107,109,127,0.40)",
-    "#ffffff",
-    "rgba(17,18,27,0.70)",
-    "rgba(255,255,255,0.30)",
-    "rgba(255,255,255,0.16)",
-    "rgba(17,18,27,0.80)",
-    "rgba(0,0,0,0.80)",
-    "rgba(17,18,27,0.86)"
-  ],
-  rex_system_red: ["rgba(240,68,82,0.10)", "#fac6cb", "rgba(240,68,82,0.50)", "#f47c85", "rgba(240,68,82,0.80)", "#f04452", "#d83d49", "#a82f39", "#782229", "#481418"],
-  rex_system_green: ["#e8f8f3", "#baebdb", "rgba(20,230,179,0.46)", "#5ed2ab", "#2fc593", "#19bf88", "#16ab7a", "#11855f", "#0c5f44", "rgba(1,83,63,0.50)"],
-  rex_system_yellow: ["#fef7e8", "#fce7bc", "#fad790", "#f8c764", "#f6b738", "#f6af22", "#dd9d1e", "#ac7a17", "#7b5711", "#49340a"],
-  rex_system_lime: ["#f2ffe3", "#e6ffcd", "#ccff9b", "#b2ff64", "#9cff38", "#8dff1c", "#85ff09", "#71e300", "#62c900", "#50ae00"],
-  rex_graph_blue: ["rgba(145,161,251,0.10)", "#d3d9fd", "#bdc6fc", "#a7b3fb", "#91a1fb", "#8290e1", "#6766e2", "#5756df", "#4544b2", "rgba(87,86,223,0.10)"],
-  rex_graph_sky: ["rgba(161,219,252,0.10)", "rgba(161,219,252,0.20)", "#bde5fc", "#a1dbfc", "#91d0fc", "#6dc1fb", "#49b2fa", "#3a8ec8", "#2b6a96", "rgba(73,178,250,0.10)"],
-  rex_graph_purple: ["rgba(208,168,239,0.10)", "#ecdcf8", "#dec2f3", "#d0a8ef", "#cf9bf7", "#bf7af4", "#af59f2", "#8c47c1", "#693591", "rgba(175,89,242,0.10)"],
-  rex_graph_green: ["rgba(116,231,189,0.10)", "#c7f5e4", "#abf0d7", "#8febca", "#74e7bd", "#50cbae", "#25bf9a", "#1d987b", "#16725c", "rgba(37,191,154,0.10)"],
-  rex_graph_yellow: ["rgba(238,181,115,0.10)", "#f8e1c7", "#f4d2ab", "#f1c38f", "#eeb573", "#ec9c42", "#ea922d", "#bb7424", "#8c571b", "rgba(234,146,45,0.10)"]
-};
-
 // Provider 정의
 export const SchemeColorProvider = ({ children }: { children: ReactNode }) => {
-  const theme = useTheme();
-  const scheme = theme.palette.mode; // 'dark' 또는 'light'
-  const colors = rexColors;
+  const scheme = useMantineColorScheme().colorScheme;
+  const colors = useMantineTheme().colors;
 
   // Memoize color values to avoid recalculating them on every render
   const memoizedColors = useMemo(() => {
     const commonColors = {
       systemWhite: colors.rex_gray[0],
+      systemWhite10: colors.rex_gray[1],
       systemGrayDim: colors.rex_gray[9],
       systemGray10: colors.rex_gray[1],
       systemGray: colors.rex_gray[2],
@@ -56,6 +29,17 @@ export const SchemeColorProvider = ({ children }: { children: ReactNode }) => {
       systemRed: colors.rex_system_red[5],
       systemGreen: colors.rex_system_green[5],
       systemYellow: colors.rex_system_yellow[5],
+      gunsanGreen: colors.rex_gunsan[3],
+      gunsanRed: colors.rex_gunsan[4],
+      gunsanGreenOpacity: "rgba(34, 227, 157, 0.2)",
+      gunsanRedOpacity: "rgba(240, 68, 82, 0.2)",
+      gunsanRedOpacity80: "rgba(240, 68, 82, 0.8)",
+      gunsanTrash: colors.rex_gunsan[5],
+      gunsanBlack20: colors.rex_gunsan_black[5],
+      gunsanBlackOpacity: colors.rex_gunsan_opacity[0],
+      gunsanMarkerDefault: colors.rex_gunsan_marker[3],
+      gunsanMarkerSelected: colors.rex_gunsan_marker[4],
+      gunsanMarkerError: colors.rex_gunsan_marker[5],
       systemLime: colors.rex_system_lime[6],
       systemInnerGreen: colors.rex_system_green[2],
       systemOuterGreen: colors.rex_system_green[9],
@@ -80,8 +64,7 @@ export const SchemeColorProvider = ({ children }: { children: ReactNode }) => {
       graphDarkSkyTransparent: colors.rex_graph_sky[9],
       graphDarkPurpleTransparent: colors.rex_graph_purple[9],
       graphDarkGreenTransparent: colors.rex_graph_green[9],
-      graphDarkYellowTransparent: colors.rex_graph_yellow[9],
-      sysyemOpacity50: colors.rex_opacity[4]
+      graphDarkYellowTransparent: colors.rex_graph_yellow[9]
     };
 
     const diffColors = {
@@ -225,7 +208,28 @@ export const SchemeColorProvider = ({ children }: { children: ReactNode }) => {
     return { ...commonColors, ...diffColors[scheme] };
   }, [colors, scheme]);
 
-  return <SchemeColorContext.Provider value={memoizedColors}>{children}</SchemeColorContext.Provider>;
+  const cssVariables = useMemo(
+    () =>
+      Object.entries(memoizedColors).reduce(
+        (acc, [key, value]) => {
+          acc[`--${key}`] = value;
+          return acc;
+        },
+        {} as Record<string, string>
+      ),
+    [memoizedColors]
+  );
+
+  return (
+    <SchemeColorContext.Provider value={memoizedColors}>
+      <Global
+        styles={{
+          ":root": cssVariables
+        }}
+      />
+      {children}
+    </SchemeColorContext.Provider>
+  );
 };
 
 // 전역적으로 제공된 색상 값에 접근하는 훅
