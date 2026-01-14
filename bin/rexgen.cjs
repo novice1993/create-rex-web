@@ -201,7 +201,6 @@ function createProject(projectName) {
     fs.writeFileSync(".env.production", `VITE_ENABLE_MSW=false\nNODE_ENV=production`);
     fs.writeFileSync("README.md", `# ${finalProjectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
 
-<<<<<<< HEAD
     const envProduction = `# Production Environment Variables
 VITE_ENABLE_MSW=false
 NODE_ENV=production`;
@@ -263,15 +262,6 @@ Create Rex-Web으로 생성된 React + Mantine 프로젝트입니다.
   } catch (error) {
     console.error("\n❌ 프로젝트 생성 중 오류가 발생했습니다:", /** @type {Error} */ (error).message);
     // 생성 실패 시 생성된 디렉토리 정리
-=======
-    if (shouldCreateDir) {
-      console.log(`\n✅ 생성 완료! 다음 명령어 실행:\ncd ${finalProjectName}\nnpm install\nnpm run dev`);
-    } else {
-      console.log(`\n✅ 생성 완료! 다음 명령어 실행:\nnpm install\nnpm run dev`);
-    }
-  } catch (err) {
-    console.error("❌ 오류 발생:", err.message);
->>>>>>> origin/main
     process.chdir("..");
     fs.rmSync(projectPath, { recursive: true, force: true });
     process.exit(1);
