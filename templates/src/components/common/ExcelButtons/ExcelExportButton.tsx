@@ -3,7 +3,7 @@ import { useSharedSchemeColor } from "@/providers/SchemeColorProvider";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { CSVLink } from "react-csv";
 import { useEffect, useState, useRef } from "react";
-import { Typography, Button } from "@mui/material";
+import { Text, Button } from "@mantine/core";
 
 export interface ExcelHeaderType {
   label: string;
@@ -69,27 +69,22 @@ const ExcelExportButton = (props: ExcelExportButtonProps) => {
 
   return (
     <Button
-      variant="contained"
+      variant="filled"
       onClick={onClickExcelExportButton}
-      sx={{
+      leftSection={<LuFileSpreadsheet />}
+      style={{
         position: "absolute",
         right: "0",
         outline: "none",
         backgroundColor: systemBlue,
         color: systemWhite,
-        "&:hover": {
-          backgroundColor: systemBlue,
-          opacity: 0.8
-        },
         display: "flex",
-        alignItems: "center",
-        gap: 0.5
+        alignItems: "center"
       }}
     >
-      <LuFileSpreadsheet />
-      <Typography variant="body2" sx={{ fontSize: "14px", lineHeight: "14px", ml: 0.5 }}>
+      <Text size="sm" style={{ lineHeight: "14px" }}>
         {t("Search.Common.ExportExcel")}
-      </Typography>
+      </Text>
       <CSVLink data={excelData} headers={excelHeader} filename={`${excelTitle}.csv`} target="_blank" ref={excelRef} />
     </Button>
   );

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { useApiRequest } from "@/hooks/http/useApiRequest";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, Tooltip } from "@mui/material";
+import { Button, Text, Tooltip } from "@mantine/core";
 import { BiLogOut } from "react-icons/bi";
 import { serverUrlPath } from "@/constants/serverUrlPath";
 import styles from "./Header.module.css";
@@ -47,12 +47,12 @@ const LogoutButton = () => {
   return (
     <div style={{ width: "fit-content", display: "flex", justifyContent: "center", alignItems: "center", color: "whtie" }}>
       <div style={{ width: "172px", textAlign: "left" }}>
-        <Typography color="white">{currentTime}</Typography>
+        <Text c="white">{currentTime}</Text>
       </div>
 
-      <Typography color="white">|</Typography>
-      <Tooltip title={t("logout")}>
-        <Button style={{ backgroundColor: "transparent", color: "white", padding: "0", paddingLeft: "5px" }} onClick={handleClickLogoutButton}>
+      <Text c="white">|</Text>
+      <Tooltip label={t("logout")}>
+        <Button variant="subtle" style={{ color: "white", padding: "0", paddingLeft: "5px" }} onClick={handleClickLogoutButton}>
           <BiLogOut className={styles["logout-button"]} size={22} />
         </Button>
       </Tooltip>

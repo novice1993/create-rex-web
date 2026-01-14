@@ -17,10 +17,10 @@ function showHelp() {
 예시:
   npx create-rex-web my-dashboard
 
-Mantine UI에서 MUI로 마이그레이션된 최신 개발 환경을 제공합니다.
+MUI에서 Mantine으로 마이그레이션된 최신 개발 환경을 제공합니다.
 포함된 기술 스택:
   ⚛️ React 18 + TypeScript
-  🎨 Material-UI (MUI) v7
+  🎨 Mantine v7
   🎭 MSW (Mock Service Worker)
   🌍 React i18next (다국어)
   📊 ECharts (차트)
@@ -101,14 +101,15 @@ function createProject(projectName) {
       },
       dependencies: {
         "@emotion/react": "^11.14.0",
-        "@emotion/styled": "^11.14.0",
         "@hookform/resolvers": "^3.9.0",
-        "@mui/material": "^7.1.1",
-        "@mui/x-date-pickers": "^8.5.1",
+        "@mantine/core": "^7.15.2",
+        "@mantine/dates": "^7.15.2",
+        "@mantine/hooks": "^7.15.2",
         "@react-google-maps/api": "^2.20.6",
         "@tanstack/react-query": "^5.59.15",
         "@tanstack/react-table": "^8.20.5",
         axios: "^1.7.7",
+        dayjs: "^1.11.13",
         echarts: "^5.5.1",
         "echarts-for-react": "3.0.2",
         jotai: "^2.9.3",
@@ -187,7 +188,7 @@ NODE_ENV=production`;
     console.log("📝 README.md 생성 중...");
     const readme = `# ${projectName}
 
-Create Rex-Web으로 생성된 React + MUI 프로젝트입니다.
+Create Rex-Web으로 생성된 React + Mantine 프로젝트입니다.
 
 ## 🚀 시작하기
 
