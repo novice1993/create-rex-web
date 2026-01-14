@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, Typography, Tooltip } from "@mui/material";
+import { Button, Text, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -52,12 +52,12 @@ const MonitoringToggleButton = () => {
 
   return (
     <div style={{ width: "fit-content", display: "flex", justifyContent: "center", alignItems: "center", color: "whtie" }}>
-      <Typography variant="body1" color="white">
+      <Text c="white">
         |
-      </Typography>
+      </Text>
 
-      <Tooltip title={isMonitorinPage ? t("vehicleInquiryPage") : t("monitoringPage")}>
-        <Button id="monitoringToggleButton" style={{ backgroundColor: "transparent", color: "white", padding: "0", paddingLeft: "5px" }} onClick={handleClickMonitoringToggleButton}>
+      <Tooltip label={isMonitorinPage ? t("vehicleInquiryPage") : t("monitoringPage")}>
+        <Button id="monitoringToggleButton" variant="subtle" style={{ color: "white", padding: "0", paddingLeft: "5px" }} onClick={handleClickMonitoringToggleButton}>
           {toggleIcons}
         </Button>
       </Tooltip>

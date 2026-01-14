@@ -1,4 +1,4 @@
-import { IconButton, Button } from "@mui/material";
+import { ActionIcon, Button } from "@mantine/core";
 import ReactEcharts, { EChartsOption } from "echarts-for-react";
 import classes from "./index.module.css";
 import { useSharedSchemeColor } from "@/providers/SchemeColorProvider";
@@ -150,26 +150,26 @@ const MixedChart = ({ title, label, barData, lineData1, lineData2, buttonClick, 
     <div className={classes.paper} style={{ backgroundColor: `${color.backgroundCard}`, color: `${color.textHighContrast}` }}>
       <ReactEcharts option={mixedOption} style={{ height: "100%", width: "100%" }} />
       <div className={classes.leftPagination}>
-        <IconButton
+        <ActionIcon
           className={currentSlide === 0 ? classes.disabledIcon : ""}
           onClick={() => setCurrentSlide(prev => Math.max(prev - 1, 0))}
           disabled={currentSlide === 0}
-          color="inherit"
-          sx={{ border: "1px solid currentColor" }}
+          variant="default"
+          style={{ border: "1px solid currentColor" }}
         >
           <FaArrowLeft />
-        </IconButton>
+        </ActionIcon>
       </div>
       <div className={classes.rightPagination}>
-        <IconButton
+        <ActionIcon
           className={currentSlide === totalSlides - 1 ? classes.disabledIcon : ""}
           onClick={() => setCurrentSlide(prev => Math.min(prev + 1, totalSlides - 1))}
           disabled={currentSlide === totalSlides - 1}
-          color="inherit"
-          sx={{ border: "1px solid currentColor" }}
+          variant="default"
+          style={{ border: "1px solid currentColor" }}
         >
           <FaArrowRight />
-        </IconButton>
+        </ActionIcon>
       </div>
       {buttonText && (
         <Button onClick={buttonClick} style={{ backgroundColor: `${color.backgroundMid}`, color: `${color.textSemiHighContrast}` }} className={classes.button}>

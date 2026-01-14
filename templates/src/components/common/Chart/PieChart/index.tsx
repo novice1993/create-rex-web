@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button } from "@mantine/core";
 import ReactEcharts, { EChartsOption } from "echarts-for-react";
 import classes from "./index.module.css";
 import { useLocale } from "@/locale";

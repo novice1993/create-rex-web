@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
+import "@mantine/core/styles.css";
 import "./index.css";
 
 // MSW는 개발 환경에서만 활성화합니다.
