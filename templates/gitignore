@@ -11,12 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
-tsconfig.tsbuildinfo
 
 # Editor directories and files
 !.vscode/extensions.json
 .cursorrules
-.cursor/rules
+.cursor/
 .idea
 .DS_Store
 *.suo
@@ -25,3 +24,5 @@ tsconfig.tsbuildinfo
 *.sln
 *.sw?
 
+# build 관련
+tsconfig.tsbuildinfo

@@ -14,6 +14,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["bin/**/*.cjs", "templates/src/**/*"],
+  "include": ["templates/src/**/*"],
   "exclude": ["node_modules"]
 }

@@ -2,8 +2,6 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
-
 const args = process.argv.slice(2);
 const projectName = args[0];
 
@@ -30,11 +28,6 @@ MUI에서 Mantine으로 마이그레이션된 최신 개발 환경을 제공합�
   `);
 }
 
-/**
- * 디렉터리를 재귀적으로 복사하는 함수
- * @param {string} src - 원본 경로
- * @param {string} dest - 대상 경로
- */
 function copyDirRecursive(src, dest) {
   try {
     fs.mkdirSync(dest, { recursive: true });
@@ -44,10 +37,12 @@ function copyDirRecursive(src, dest) {
       const srcPath = path.join(src, entry.name);
       const destPath = path.join(dest, entry.name);
 
+      const finalDestPath = entry.name === "gitignore" ? path.join(dest, ".gitignore") : destPath;
+
       if (entry.isDirectory()) {
-        copyDirRecursive(srcPath, destPath);
+        copyDirRecursive(srcPath, finalDestPath);
       } else {
-        fs.copyFileSync(srcPath, destPath);
+        fs.copyFileSync(srcPath, finalDestPath);
       }
     }
   } catch (error) {
@@ -56,36 +51,77 @@ function copyDirRecursive(src, dest) {
   }
 }
 
-/**
- * Creates a new project directory and populates it with the template files.
- * @param {string} projectName - The name of the project to create.
- */
 function createProject(projectName) {
-  if (!projectName || !/^[a-zA-Z0-9-_]+$/.test(projectName)) {
-    console.error("❌ 유효한 프로젝트 이름을 입력해주세요. (영문, 숫자, -, _ 만 사용 가능)");
+  if (!projectName) {
+    console.error("❌ 프로젝트 이름 또는 경로를 입력해주세요.");
     showHelp();
     process.exit(1);
   }
 
-  const projectPath = path.resolve(process.cwd(), projectName);
+  // 현재 디렉토리 설치인지 확인
+  const isCurrentDir = projectName === "." || projectName === "./";
 
-  if (fs.existsSync(projectPath)) {
-    console.error(`❌ '${projectName}' 디렉토리가 이미 존재합니다.`);
+  let finalProjectName;
+  let projectPath;
+  let shouldCreateDir = true;
+
+  if (isCurrentDir) {
+    // 현재 디렉토리에 직접 설치
+    projectPath = process.cwd();
+    finalProjectName = path.basename(projectPath);
+    shouldCreateDir = false;
+
+    // 현재 디렉토리가 비어있는지 확인
+    const entries = fs.readdirSync(projectPath);
+    if (entries.length > 0) {
+      console.error("❌ 현재 디렉토리가 비어있지 않습니다. 빈 디렉토리에서 실행해주세요.");
+      process.exit(1);
+    }
+  } else {
+    // 경로인지 확인 (/, \ 포함)
+    const isPath = projectName.includes("/") || projectName.includes("\\");
+
+    if (isPath) {
+      // 경로인 경우
+      projectPath = path.resolve(process.cwd(), projectName);
+      finalProjectName = path.basename(projectPath);
+    } else {
+      // 일반 프로젝트 이름인 경우
+      if (!/^[a-zA-Z0-9-_]+$/.test(projectName)) {
+        console.error("❌ 유효한 프로젝트 이름을 입력해주세요.");
+        showHelp();
+        process.exit(1);
+      }
+      finalProjectName = projectName;
+      projectPath = path.resolve(process.cwd(), projectName);
+    }
+  }
+
+  // 최종 프로젝트 이름 유효성 검사
+  if (!finalProjectName || !/^[a-zA-Z0-9-_]+$/.test(finalProjectName)) {
+    console.error("❌ 유효한 프로젝트 이름을 입력해주세요.");
+    showHelp();
     process.exit(1);
   }
 
-  console.log(`\n⚡ Create Rex-Web 프로젝트 생성 시작: ${projectName}\n`);
+  if (shouldCreateDir && fs.existsSync(projectPath)) {
+    console.error(`❌ '${finalProjectName}' 디렉토리가 이미 존재합니다.`);
+    process.exit(1);
+  }
+
+  console.log(`\n⚡ 프로젝트 생성 시작: ${finalProjectName}\n`);
 
   try {
-    // 1. 프로젝트 디렉토리 생성
-    fs.mkdirSync(projectPath);
+    if (shouldCreateDir) {
+      fs.mkdirSync(projectPath);
+    }
     process.chdir(projectPath);
-    console.log(`📁 프로젝트 디렉토리 생성 완료: ${projectPath}`);
+    console.log(`📁 ${shouldCreateDir ? "디렉토리 생성 완료" : "현재 디렉토리 사용"}: ${projectPath}`);
 
-    // 2. package.json 생성
+    // package.json 생성
     console.log("📦 package.json 생성 중...");
     const packageJson = {
-      name: projectName,
+      name: finalProjectName,
       version: "0.1.0",
       private: true,
       type: "module",
@@ -126,6 +162,7 @@ function createProject(projectName) {
         zod: "^3.23.8"
       },
       devDependencies: {
+        "@types/node": "^20.11.30",
         "@types/react": "^18.3.3",
         "@types/react-csv": "^1.1.10",
         "@types/react-dom": "^18.3.0",
@@ -144,40 +181,27 @@ function createProject(projectName) {
         vite: "^5.4.1",
         "vite-plugin-dts": "^4.0.0",
         "vite-plugin-svgr": "^4.3.0"
-      },
-      msw: {
-        workerDirectory: ["public"]
-      },
-      "lint-staged": {
-        "**/*.{js,jsx,ts,tsx}": ["prettier --write", "eslint --format stylish --max-warnings=0"]
       }
     };
     fs.writeFileSync("package.json", JSON.stringify(packageJson, null, 2));
 
-    // 3. 템플릿 파일 복사
-    console.log("📋 템플릿 파일 복사 중...");
-    const cliEntryFile = require.main?.filename;
-    if (!cliEntryFile) {
-      console.error("❌ CLI 실행 경로를 찾을 수 없습니다. CLI 도구 설치에 문제가 있을 수 있습니다.");
-      process.exit(1);
-    }
+    // 템플릿 복사
+    const cliEntryFile = require.main?.filename || "";
     const cliPath = path.dirname(cliEntryFile);
     const templatesPath = path.join(cliPath, "..", "templates");
     if (fs.existsSync(templatesPath)) {
       copyDirRecursive(templatesPath, projectPath);
-      console.log("  ✅ 템플릿 파일 복사 완료");
+      console.log("✅ 템플릿 복사 완료");
     } else {
-      console.error("❌ 'templates' 디렉토리를 찾을 수 없습니다. CLI 도구 설치에 문제가 있을 수 있습니다.");
+      console.error("❌ 템플릿 경로를 찾을 수 없습니다.");
       process.exit(1);
     }
 
-    // 4. 환경 변수 파일(.env) 생성
-    console.log("🔧 .env 파일 생성 중...");
-    const envDevelopment = `# Development Environment Variables
-VITE_ENABLE_MSW=true
-NODE_ENV=development`;
-    fs.writeFileSync(".env.development", envDevelopment);
+    fs.writeFileSync(".env.development", `VITE_ENABLE_MSW=true\nNODE_ENV=development`);
+    fs.writeFileSync(".env.production", `VITE_ENABLE_MSW=false\nNODE_ENV=production`);
+    fs.writeFileSync("README.md", `# ${finalProjectName}\n\nCreate Rex-Web으로 생성된 React + MUI 프로젝트입니다.`);
 
+<<<<<<< HEAD
     const envProduction = `# Production Environment Variables
 VITE_ENABLE_MSW=false
 NODE_ENV=production`;
@@ -239,14 +263,21 @@ Create Rex-Web으로 생성된 React + Mantine 프로젝트입니다.
   } catch (error) {
     console.error("\n❌ 프로젝트 생성 중 오류가 발생했습니다:", /** @type {Error} */ (error).message);
     // 생성 실패 시 생성된 디렉토리 정리
+=======
+    if (shouldCreateDir) {
+      console.log(`\n✅ 생성 완료! 다음 명령어 실행:\ncd ${finalProjectName}\nnpm install\nnpm run dev`);
+    } else {
+      console.log(`\n✅ 생성 완료! 다음 명령어 실행:\nnpm install\nnpm run dev`);
+    }
+  } catch (err) {
+    console.error("❌ 오류 발생:", err.message);
+>>>>>>> origin/main
     process.chdir("..");
     fs.rmSync(projectPath, { recursive: true, force: true });
-    console.error("🧹 생성된 파일을 정리했습니다.");
     process.exit(1);
   }
 }
 
-// 메인 실행
 if (args.length === 0 || args.includes("help") || args.includes("--help") || args.includes("-h")) {
   showHelp();
 } else {
